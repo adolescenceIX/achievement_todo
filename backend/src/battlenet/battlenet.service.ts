@@ -16,26 +16,43 @@ export class BattlenetService {
   }
 
   async getToken() {
-    return await firstValueFrom(
-      this.httpService.post(
-        `${process.env.BATTLENET_API_URL}/oauth/token`,
-        null,
-        {
-          params: { grant_type: 'client_credentials' },
-          auth: {
-            username: process.env.BATTLENET_CLIENT_ID,
-            password: process.env.BATTLENET_CLIENT_SECRET,
+    try {
+      return await firstValueFrom(
+        this.httpService.post(
+          `${process.env.BATTLENET_OAUTH_URL}/oauth/token`,
+          null,
+          {
+            params: { grant_type: 'client_credentials' },
+            auth: {
+              username: process.env.BATTLENET_CLIENT_ID,
+              password: process.env.BATTLENET_CLIENT_SECRET,
+            },
+            headers: {
+              'Content-Type': 'application/json',
+            },
           },
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      ),
-    );
+        ),
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   async getAchievements() {
-    const token = await this.cacheManager.get('battlenet_token');
-    console.log(token);
+    try {
+      const token = await this.cacheManager.get('battlenet_token');
+      return await firstValueFrom(
+        this.httpService.get(
+          `${process.env.BATTLENET_API_URL}/data/wow/achievement/index?namespace=static-eu&locale=en_GB`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        ),
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }
 }

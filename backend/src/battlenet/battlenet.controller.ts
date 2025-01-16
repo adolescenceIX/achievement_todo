@@ -5,7 +5,10 @@ import { BattlenetService } from './battlenet.service';
 export class BattlenetController {
   constructor(private readonly bnetService: BattlenetService) {}
   @Get('achievements')
-  getAchievements() {
-    this.bnetService.getAchievements();
+  async getAchievements() {
+    const achievements = (await this.bnetService.getAchievements()).data;
+    return achievements;
   }
+  @Get('achievement/:id')
+  async getAchievement() {}
 }
