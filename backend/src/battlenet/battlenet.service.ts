@@ -1,21 +1,18 @@
 import { HttpService } from '@nestjs/axios';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
+import { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
+import { BNET_TOKEN_CACHE } from 'src/utils/constants';
 
 @Injectable()
 export class BattlenetService {
   constructor(
     private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {
-    this.getToken().then((response) => {
-      const token = response.data.access_token;
-      cacheManager.set('battlenet_token', token, token.expires_in);
-    });
-  }
+  ) {}
 
-  async getToken() {
+  async fetchToken(): Promise<AxiosResponse> {
     try {
       return await firstValueFrom(
         this.httpService.post(
@@ -40,7 +37,7 @@ export class BattlenetService {
 
   async getAchievements() {
     try {
-      const token = await this.cacheManager.get('battlenet_token');
+      const token = await this.cacheManager.get(BNET_TOKEN_CACHE);
       return await firstValueFrom(
         this.httpService.get(
           `${process.env.BATTLENET_API_URL}/data/wow/achievement/index?namespace=static-eu&locale=en_GB`,

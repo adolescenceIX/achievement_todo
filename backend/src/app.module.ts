@@ -7,6 +7,8 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
+import { BnetInterceptor } from './interceptors/bnet.interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -25,6 +27,10 @@ import { CacheModule } from '@nestjs/cache-manager';
     CacheModule.register(),
   ],
   controllers: [AppController, BattlenetController],
-  providers: [AppService, BattlenetService],
+  providers: [
+    AppService,
+    BattlenetService,
+    { provide: APP_INTERCEPTOR, useClass: BnetInterceptor },
+  ],
 })
 export class AppModule {}

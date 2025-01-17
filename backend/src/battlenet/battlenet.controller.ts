@@ -1,7 +1,9 @@
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { BattlenetService } from './battlenet.service';
+import { BnetInterceptor } from 'src/interceptors/bnet.interceptor';
 
 @Controller('battlenet')
+@UseInterceptors(BnetInterceptor)
 export class BattlenetController {
   constructor(private readonly bnetService: BattlenetService) {}
   @Get('achievements')
